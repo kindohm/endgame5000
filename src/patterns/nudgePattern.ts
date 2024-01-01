@@ -14,7 +14,7 @@ export const nudgePattern = (pattern: Pattern): Pattern => {
         h.length + 1,
         h.length + 2,
       ];
-      return { length: randItem(opts) };
+      return { ...h, length: randItem(opts) };
     }
     return h;
   });

@@ -1,5 +1,7 @@
 import { Pattern } from "./types";
 
 export const patternToString = (pattern: Pattern) => {
-  return `{${pattern.hits.map((h) => `1@${h.length}`).join(" ")}}%16`;
+  return `{${pattern.hits
+    .map((h) => `${h.on ? "1" : "0"}@${h.length}`)
+    .join(" ")}}%16`;
 };

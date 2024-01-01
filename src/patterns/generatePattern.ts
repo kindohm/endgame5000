@@ -18,9 +18,27 @@ export const generatePattern = ({
   const hits = new Array(len).fill(null).map(() => {
     return {
       length: Math.max(cen + randInt(-spr, spr), 1),
-      period: false,
+      on: true,
     };
   });
 
   return { hits };
+};
+
+export const generatePeriodPattern = () => {
+  return {
+    hits: [
+      { length: 1, on: true },
+      { length: 10, on: false },
+    ],
+  };
+};
+
+export const generateBurstPattern = () => {
+  return {
+    hits: [
+      { length: randInt(4, 10), on: true },
+      { length: randInt(20, 50), on: false },
+    ],
+  };
 };
