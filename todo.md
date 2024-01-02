@@ -6,3 +6,4 @@
 - synth CC controls
 - save/recall
 - silent step
+- fast zero out cps steps
