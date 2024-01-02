@@ -1,4 +1,5 @@
 import { evaluate } from "../ghci/evaluate";
+import cpsMultMin from "../osc/commands/cpsMultMin";
 import {
   generateMultPattern,
   generatePattern,
@@ -76,6 +77,8 @@ export const getTidal = (comp: Composition) => {
     iterProb,
     revProb,
     iterType,
+    cpsMultMax,
+    cpsMultMin,
   } = comp;
   const patternString = patternToString(pattern);
   const cpsMultPatternString = cpsMultPatternToString(comp);
@@ -94,9 +97,12 @@ export const getTidal = (comp: Composition) => {
   let pat = "${patternString}"
   d1 
     $ ${mute}
-    $ (|* cps "${cpsMultPatternString}")
+    $ (|* cps (range ${1 - cpsMultMin * 0.97} ${
+    1 + cpsMultMax * 3
+  } $ (666 ~>) $ rand))
     $ someCyclesBy ${revProb} rev $ (1 ~>)
     $ someCyclesBy ${iterProb} (${iter}) $ (1 ~>)
+    $ (|* cps "${cpsMultPatternString}")
     $ stack [
       -- main synth
       struct pat $ s "synth1" # midichan ${synthChan} # amp 1 # note "c5"

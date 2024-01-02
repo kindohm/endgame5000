@@ -1,0 +1,8 @@
+- plies
+- lock all patterns (length, cps, plies) to same num steps
+- randomization global functions
+  - global random calls local randoms
+- mute parts
+- synth CC controls
+- save/recall
+- silent step

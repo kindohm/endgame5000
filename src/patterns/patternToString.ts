@@ -17,13 +17,11 @@ export const cpsMultPatternToString = (composition: Composition) => {
   return `{${cpsMultPattern.mults
     .filter((m, i) => i < cpsMultPattern.length)
     .map((m) => {
-      const min = convertRange(
-        cpsMultMin,
-        [0, 1],
-        [1, m.mult > 0.5 ? 1 : 0.25]
-      );
-      const max = convertRange(cpsMultMax, [0, 1], [1, m.mult < 0.5 ? 1 : 2]);
-      const mult = convertRange(m.mult, [0, 1], [min, max]);
+      const min = m.mult > 0.5 ? 1 : 0.25;
+      const max = m.mult > 0.5 ? 2 : 1;
+      console.log({ mult: m.mult, min, max });
+      const mult =
+        m.mult === 0.5 ? 1 : convertRange(m.mult, [0, 1], [min, max]);
       return `${mult.toFixed(2)}@${m.length}`;
     })
     .join(" ")}}%16`;

@@ -11,9 +11,11 @@ const cpsStep = (msg: OscMessage) => {
   const index = parseInt(address.substring(8)) - 1;
   const newMults = cpsMultPattern.mults.map((mult, i) => {
     if (i === index) {
+      const val = args[0].value as number;
+
       return {
         ...mult,
-        mult: args[0].value as number,
+        mult: val > 0.45 && val < 0.55 ? 0.5 : val,
       };
     }
 
