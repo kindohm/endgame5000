@@ -4,5 +4,6 @@ export type Hit = {
 };
 
 export type Pattern = {
+  length: number;
   hits: Hit[];
 };

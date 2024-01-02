@@ -1,64 +1,63 @@
-import {
-  generateBurstPattern,
-  generatePattern,
-  generatePeriodPattern,
-} from "../patterns/generatePattern";
+import { evaluate } from "../ghci/evaluate";
+import { generatePattern } from "../patterns/generatePattern";
 import { patternToString } from "../patterns/patternToString";
 import { Pattern } from "../patterns/types";
-import { randInt } from "../util";
 
 export type Composition = {
   pattern: Pattern;
-  periodPattern: Pattern;
   synthChan: number;
   periodSynthChan: number;
-  burstPattern: Pattern;
+  playing: boolean;
+  tidal: string;
 };
 
 let composition: Composition;
 
+export const getComposition = () => composition;
+
 export const createInitialComposition = () => {
   const pattern = generatePattern({});
-  const periodPattern = generatePeriodPattern();
-  const burstPattern = generateBurstPattern();
   composition = {
+    playing: false,
     pattern,
-    periodPattern,
-    synthChan: randInt(0, 15),
-    periodSynthChan: randInt(0, 15),
-    burstPattern,
+    synthChan: 0, // randInt(0, 15),
+    periodSynthChan: 0, // randInt(0, 15),
+    tidal: "hush",
   };
+  evaluate(composition.tidal);
 };
 
 export const updateComposition = (
   fieldsToUpdate: Partial<Composition>
 ): Composition => {
-  composition = { ...composition, ...fieldsToUpdate };
+  const newComposition = { ...composition, ...fieldsToUpdate };
+  const tidal = getTidal(newComposition);
+  composition = { ...newComposition, tidal };
+
+  console.log(composition.tidal);
+
+  evaluate(composition.tidal);
   return composition;
 };
 
-export const getTidal = () => {
-  const { pattern, synthChan, periodPattern, periodSynthChan, burstPattern } =
-    composition;
+export const getTidal = (comp: Composition) => {
+  const { pattern, synthChan, periodSynthChan, playing } = comp;
   const patternString = patternToString(pattern);
-  const periodPatternString = patternToString(periodPattern);
-  const burstPatternString = patternToString(burstPattern);
+  const mute = playing ? "id" : '(const $ s "~")';
   return `do
-  let burstStruct = struct "{1}%16"
   let pat = "${patternString}"
-  let periodPat = "${periodPatternString}"
-  let burstPat = "${burstPatternString}"
-  d1 $
-    stack [
+  d1 
+    $ ${mute}
+    $ stack [
       -- main synth
-      mask (inv periodPat) $ while burstPat (burstStruct) $ struct pat $ s "harmor" # midichan ${synthChan} # amp 1
-      , mask (periodPat) $ while burstPat (burstStruct) $ struct pat $ s "harmor" # midichan ${synthChan} # amp 0.1
+      struct pat $ s "synth1" # midichan ${synthChan} # amp 1 # note "c5"
+      , struct (inv pat) $ s "synth1" # midichan ${synthChan} # amp 0.1 # note "c5"
       -- period synth
-      , mask (periodPat) $ struct pat $ s "harmor" # midichan ${periodSynthChan} # amp 1
-      , mask (periodPat) $ struct pat $ s "harmor" # midichan ${periodSynthChan} # amp 0.1
+      , struct (inv pat) $ s "synth2" # midichan ${periodSynthChan} # amp 1 # note "c5"
+      , struct pat $ s "synth2" # midichan ${periodSynthChan} # amp 0.1 # note "c5"
       -- kick
-      , mask (inv periodPat) $ while burstPat (burstStruct) $ struct pat $ s "drums" # midichan 0 # amp 1
+      , struct pat $ s "drums" # midichan 0 # amp 1 # note "c5"
       -- clap
-      , mask (periodPat) $ struct pat $ s "drums" # midichan 3 # amp 1
-    ] # cps 1`;
+      , struct (inv pat) $ s "drums" # midichan 3 # amp 1 # note "c5"
+    ] # cps 0.666`;
 };
