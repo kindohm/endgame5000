@@ -10,9 +10,10 @@ const numSteps = (msg: OscMessage) => {
   const length = Math.floor(
     convertRange(args[0].value as number, [0, 1], [1, 8])
   );
-  const { pattern } = getComposition();
+  const { pattern, cpsMultPattern } = getComposition();
   const newPattern = { ...pattern, length };
-  updateComposition({ pattern: newPattern });
+  const newCpsMultPattern = { ...cpsMultPattern, length };
+  updateComposition({ pattern: newPattern, cpsMultPattern: newCpsMultPattern });
 };
 
 export default numSteps;

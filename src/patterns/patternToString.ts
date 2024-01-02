@@ -1,3 +1,5 @@
+import { Composition } from "../composition/composition";
+import { convertRange } from "../util";
 import { Pattern } from "./types";
 
 export const patternToString = (pattern: Pattern) => {
@@ -6,5 +8,23 @@ export const patternToString = (pattern: Pattern) => {
     .map((h, i) =>
       i < pattern.length ? `${h.on ? "1" : "0"}@${h.length}` : ""
     )
+    .join(" ")}}%16`;
+};
+
+export const cpsMultPatternToString = (composition: Composition) => {
+  const { cpsMultPattern, cpsMultMax, cpsMultMin } = composition;
+
+  return `{${cpsMultPattern.mults
+    .filter((m, i) => i < cpsMultPattern.length)
+    .map((m) => {
+      const min = convertRange(
+        cpsMultMin,
+        [0, 1],
+        [1, m.mult > 0.5 ? 1 : 0.25]
+      );
+      const max = convertRange(cpsMultMax, [0, 1], [1, m.mult < 0.5 ? 1 : 2]);
+      const mult = convertRange(m.mult, [0, 1], [min, max]);
+      return `${mult.toFixed(2)}@${m.length}`;
+    })
     .join(" ")}}%16`;
 };

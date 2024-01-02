@@ -1,7 +1,13 @@
 import { evaluate } from "../ghci/evaluate";
-import { generatePattern } from "../patterns/generatePattern";
-import { patternToString } from "../patterns/patternToString";
-import { Pattern } from "../patterns/types";
+import {
+  generateMultPattern,
+  generatePattern,
+} from "../patterns/generatePattern";
+import {
+  cpsMultPatternToString,
+  patternToString,
+} from "../patterns/patternToString";
+import { Pattern, MultPattern } from "../patterns/types";
 
 enum IterType {
   Iter4 = 0,
@@ -13,6 +19,7 @@ enum IterType {
 
 export type Composition = {
   pattern: Pattern;
+  cpsMultPattern: MultPattern;
   synthChan: number;
   periodSynthChan: number;
   playing: boolean;
@@ -20,6 +27,8 @@ export type Composition = {
   iterProb: number;
   revProb: number;
   iterType: IterType;
+  cpsMultMin: number;
+  cpsMultMax: number;
 };
 
 let composition: Composition;
@@ -28,15 +37,19 @@ export const getComposition = () => composition;
 
 export const createInitialComposition = () => {
   const pattern = generatePattern({});
+  const cpsMultPattern = generateMultPattern({});
   composition = {
     playing: false,
     iterProb: 0,
     revProb: 0,
     pattern,
+    cpsMultPattern,
     synthChan: 0, // randInt(0, 15),
     periodSynthChan: 0, // randInt(0, 15),
     tidal: "hush",
     iterType: IterType.Iter8,
+    cpsMultMin: 0,
+    cpsMultMax: 0,
   };
   evaluate(composition.tidal);
 };
@@ -65,6 +78,7 @@ export const getTidal = (comp: Composition) => {
     iterType,
   } = comp;
   const patternString = patternToString(pattern);
+  const cpsMultPatternString = cpsMultPatternToString(comp);
   const mute = playing ? "id" : '(const $ s "~")';
   const iter =
     iterType === IterType.Iter8
@@ -80,6 +94,7 @@ export const getTidal = (comp: Composition) => {
   let pat = "${patternString}"
   d1 
     $ ${mute}
+    $ (|* cps "${cpsMultPatternString}")
     $ someCyclesBy ${revProb} rev $ (1 ~>)
     $ someCyclesBy ${iterProb} (${iter}) $ (1 ~>)
     $ stack [

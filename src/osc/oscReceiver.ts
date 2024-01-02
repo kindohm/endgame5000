@@ -8,6 +8,9 @@ import period from "./commands/period";
 import iterProb from "./commands/iterProb";
 import revProb from "./commands/revProb";
 import iterType from "./commands/iterType";
+import cpsStep from "./commands/cpsStep";
+import cpsMultMin from "./commands/cpsMultMin";
+import cpsMultMax from "./commands/cpsMultMax";
 
 const commandMap: Record<string, (msg: OscMessage) => void> = {
   "/play": play,
@@ -30,6 +33,16 @@ const commandMap: Record<string, (msg: OscMessage) => void> = {
   "/iterProb": iterProb,
   "/revProb": revProb,
   "/iterType": iterType,
+  "/cpsStep1": cpsStep,
+  "/cpsStep2": cpsStep,
+  "/cpsStep3": cpsStep,
+  "/cpsStep4": cpsStep,
+  "/cpsStep5": cpsStep,
+  "/cpsStep6": cpsStep,
+  "/cpsStep7": cpsStep,
+  "/cpsStep8": cpsStep,
+  "/cpsMultMin": cpsMultMin,
+  "/cpsMultMax": cpsMultMax,
 };
 
 const defaultPort = 5150;
