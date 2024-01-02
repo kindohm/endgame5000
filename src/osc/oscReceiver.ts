@@ -5,6 +5,9 @@ import play from "./commands/play";
 import step from "./commands/step";
 import numSteps from "./commands/numSteps";
 import period from "./commands/period";
+import iterProb from "./commands/iterProb";
+import revProb from "./commands/revProb";
+import iterType from "./commands/iterType";
 
 const commandMap: Record<string, (msg: OscMessage) => void> = {
   "/play": play,
@@ -24,6 +27,9 @@ const commandMap: Record<string, (msg: OscMessage) => void> = {
   "/step6": step,
   "/step7": step,
   "/step8": step,
+  "/iterProb": iterProb,
+  "/revProb": revProb,
+  "/iterType": iterType,
 };
 
 const defaultPort = 5150;
@@ -42,12 +48,10 @@ udpPort.on("message", function (oscMsg: OscMessage) {
     return;
   }
 
-  //console.log("msg", oscMsg);
+  // console.log("msg", oscMsg);
 
   if (commandMap[address]) {
     commandMap[address](oscMsg);
-  } else {
-    // console.warn("No command!", address);
   }
 });
 

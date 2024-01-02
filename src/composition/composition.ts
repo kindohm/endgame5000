@@ -3,12 +3,23 @@ import { generatePattern } from "../patterns/generatePattern";
 import { patternToString } from "../patterns/patternToString";
 import { Pattern } from "../patterns/types";
 
+enum IterType {
+  Iter4 = 0,
+  Iter8 = 1,
+  Iter16 = 2,
+  Iter48 = 3,
+  Iter816 = 4,
+}
+
 export type Composition = {
   pattern: Pattern;
   synthChan: number;
   periodSynthChan: number;
   playing: boolean;
   tidal: string;
+  iterProb: number;
+  revProb: number;
+  iterType: IterType;
 };
 
 let composition: Composition;
@@ -19,10 +30,13 @@ export const createInitialComposition = () => {
   const pattern = generatePattern({});
   composition = {
     playing: false,
+    iterProb: 0,
+    revProb: 0,
     pattern,
     synthChan: 0, // randInt(0, 15),
     periodSynthChan: 0, // randInt(0, 15),
     tidal: "hush",
+    iterType: IterType.Iter8,
   };
   evaluate(composition.tidal);
 };
@@ -41,13 +55,33 @@ export const updateComposition = (
 };
 
 export const getTidal = (comp: Composition) => {
-  const { pattern, synthChan, periodSynthChan, playing } = comp;
+  const {
+    pattern,
+    synthChan,
+    periodSynthChan,
+    playing,
+    iterProb,
+    revProb,
+    iterType,
+  } = comp;
   const patternString = patternToString(pattern);
   const mute = playing ? "id" : '(const $ s "~")';
+  const iter =
+    iterType === IterType.Iter8
+      ? "iter 8"
+      : iterType === IterType.Iter4
+      ? "iter 4"
+      : iterType === IterType.Iter16
+      ? "iter 16"
+      : iterType === IterType.Iter48
+      ? 'iter "<4 8>"'
+      : 'iter "<8 16>"';
   return `do
   let pat = "${patternString}"
   d1 
     $ ${mute}
+    $ someCyclesBy ${revProb} rev $ (1 ~>)
+    $ someCyclesBy ${iterProb} (${iter}) $ (1 ~>)
     $ stack [
       -- main synth
       struct pat $ s "synth1" # midichan ${synthChan} # amp 1 # note "c5"
