@@ -7,7 +7,7 @@ import { OscMessage } from "../oscTypes";
 
 const step = (msg: OscMessage) => {
   const { address, args } = msg;
-  const { pattern, cpsMultPattern } = getComposition();
+  const { pattern, cpsMultPattern, pliesPattern } = getComposition();
 
   const index = parseInt(address.substring(5)) - 1;
   const newHits = pattern.hits.map((hit, i) => {
@@ -36,9 +36,27 @@ const step = (msg: OscMessage) => {
     return mult;
   });
 
+  const newPlies = pliesPattern.plies.map((ply, i) => {
+    if (i === index) {
+      return {
+        ...ply,
+        length: Math.floor(
+          convertRange(args[0].value as number, [0, 1], [1, 10])
+        ),
+      };
+    }
+
+    return ply;
+  });
+
   const newPattern = { ...pattern, hits: newHits };
   const newCpsMultPattern = { ...cpsMultPattern, mults: newMults };
-  updateComposition({ pattern: newPattern, cpsMultPattern: newCpsMultPattern });
+  const newPliesPattern = { ...pliesPattern, plies: newPlies };
+  updateComposition({
+    pattern: newPattern,
+    cpsMultPattern: newCpsMultPattern,
+    pliesPattern: newPliesPattern,
+  });
 };
 
 export default step;

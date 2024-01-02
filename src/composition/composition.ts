@@ -1,14 +1,16 @@
 import { evaluate } from "../ghci/evaluate";
-import cpsMultMin from "../osc/commands/cpsMultMin";
 import {
   generateMultPattern,
   generatePattern,
+  generatePliesPattern,
 } from "../patterns/generatePattern";
 import {
   cpsMultPatternToString,
   patternToString,
+  pliesPatternToString,
 } from "../patterns/patternToString";
-import { Pattern, MultPattern } from "../patterns/types";
+import { Pattern, MultPattern, PliesPattern } from "../patterns/types";
+import { convertRange } from "../util";
 
 enum IterType {
   Iter4 = 0,
@@ -21,6 +23,7 @@ enum IterType {
 export type Composition = {
   pattern: Pattern;
   cpsMultPattern: MultPattern;
+  pliesPattern: PliesPattern;
   synthChan: number;
   periodSynthChan: number;
   playing: boolean;
@@ -30,6 +33,7 @@ export type Composition = {
   iterType: IterType;
   cpsMultMin: number;
   cpsMultMax: number;
+  cps: number;
 };
 
 let composition: Composition;
@@ -39,18 +43,21 @@ export const getComposition = () => composition;
 export const createInitialComposition = () => {
   const pattern = generatePattern({});
   const cpsMultPattern = generateMultPattern({});
+  const pliesPattern = generatePliesPattern();
   composition = {
     playing: false,
     iterProb: 0,
     revProb: 0,
     pattern,
     cpsMultPattern,
+    pliesPattern,
     synthChan: 0, // randInt(0, 15),
     periodSynthChan: 0, // randInt(0, 15),
     tidal: "hush",
     iterType: IterType.Iter8,
     cpsMultMin: 0,
     cpsMultMax: 0,
+    cps: 0.5,
   };
   evaluate(composition.tidal);
 };
@@ -79,10 +86,14 @@ export const getTidal = (comp: Composition) => {
     iterType,
     cpsMultMax,
     cpsMultMin,
+    cps,
+    pliesPattern,
   } = comp;
   const patternString = patternToString(pattern);
   const cpsMultPatternString = cpsMultPatternToString(comp);
   const mute = playing ? "id" : '(const $ s "~")';
+  const actualCps = convertRange(cps, [0, 1], [0.1, 1.4]).toFixed(2);
+  const pliesPat = pliesPatternToString(pliesPattern);
   const iter =
     iterType === IterType.Iter8
       ? "iter 8"
@@ -105,14 +116,14 @@ export const getTidal = (comp: Composition) => {
     $ (|* cps "${cpsMultPatternString}")
     $ stack [
       -- main synth
-      struct pat $ s "synth1" # midichan ${synthChan} # amp 1 # note "c5"
+      ${pliesPat} $ struct pat $ s "synth1" # midichan ${synthChan} # amp 1 # note "c5"
       , struct (inv pat) $ s "synth1" # midichan ${synthChan} # amp 0.1 # note "c5"
       -- period synth
-      , struct (inv pat) $ s "synth2" # midichan ${periodSynthChan} # amp 1 # note "c5"
+      , ${pliesPat} $ struct (inv pat) $ s "synth2" # midichan ${periodSynthChan} # amp 1 # note "c5"
       , struct pat $ s "synth2" # midichan ${periodSynthChan} # amp 0.1 # note "c5"
       -- kick
-      , struct pat $ s "drums" # midichan 0 # amp 1 # note "c5"
+      , ${pliesPat} $ struct pat $ s "drums" # midichan 0 # amp 1 # note "c5"
       -- clap
-      , struct (inv pat) $ s "drums" # midichan 3 # amp 1 # note "c5"
-    ] # cps 0.666`;
+      , ${pliesPat} $ struct (inv pat) $ s "drums" # midichan 3 # amp 1 # note "c5"
+    ] # cps ${actualCps}`;
 };

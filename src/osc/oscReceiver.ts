@@ -11,6 +11,7 @@ import iterType from "./commands/iterType";
 import cpsStep from "./commands/cpsStep";
 import cpsMultMin from "./commands/cpsMultMin";
 import cpsMultMax from "./commands/cpsMultMax";
+import plies from "./commands/plies";
 
 const commandMap: Record<string, (msg: OscMessage) => void> = {
   "/play": play,
@@ -43,6 +44,14 @@ const commandMap: Record<string, (msg: OscMessage) => void> = {
   "/cpsStep8": cpsStep,
   "/cpsMultMin": cpsMultMin,
   "/cpsMultMax": cpsMultMax,
+  "/plies1": plies,
+  "/plies2": plies,
+  "/plies3": plies,
+  "/plies4": plies,
+  "/plies5": plies,
+  "/plies6": plies,
+  "/plies7": plies,
+  "/plies8": plies,
 };
 
 const defaultPort = 5150;

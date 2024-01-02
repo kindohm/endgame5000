@@ -17,3 +17,14 @@ do
       -- clap
       , struct (inv pat) $ s "drums" # midichan 3 # amp 1 # note "c5"
     ] # cps 0.666
+
+
+do
+  let pat = "{1@2 0@2 ~@2}%16"
+  d1
+    $ stack [
+      struct pat $ s "drums" # midichan 0 # note "c5" # amp 1
+      , struct (inv pat) $ s "drums" # midichan 3 # note "c5" # amp 1
+    ] # cps 0.5
+
+    hush

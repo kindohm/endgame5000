@@ -1,6 +1,6 @@
 import { Composition } from "../composition/composition";
 import { convertRange } from "../util";
-import { Pattern } from "./types";
+import { Pattern, PliesPattern } from "./types";
 
 export const patternToString = (pattern: Pattern) => {
   return `{${pattern.hits
@@ -12,7 +12,7 @@ export const patternToString = (pattern: Pattern) => {
 };
 
 export const cpsMultPatternToString = (composition: Composition) => {
-  const { cpsMultPattern, cpsMultMax, cpsMultMin } = composition;
+  const { cpsMultPattern } = composition;
 
   return `{${cpsMultPattern.mults
     .filter((m, i) => i < cpsMultPattern.length)
@@ -25,4 +25,16 @@ export const cpsMultPatternToString = (composition: Composition) => {
       return `${mult.toFixed(2)}@${m.length}`;
     })
     .join(" ")}}%16`;
+};
+
+export const pliesPatternToString = (pattern: PliesPattern) => {
+  const { length, plies } = pattern;
+
+  return `plyWith "{${plies
+    .filter((p, i) => i < length)
+    .map((ply) => {
+      const reps = convertRange(ply.repeats, [0, 1], [1, 10]);
+      return `${Math.floor(reps)}@${ply.length}`;
+    })
+    .join(" ")}}%16" (# amp 0.5)`;
 };

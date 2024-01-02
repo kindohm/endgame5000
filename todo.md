@@ -1,9 +1,12 @@
 - plies
+  - core UI
+  - plies type (static vs mult)
 - lock all patterns (length, cps, plies) to same num steps
 - randomization global functions
   - global random calls local randoms
 - mute parts
 - synth CC controls
 - save/recall
-- silent step
-- fast zero out cps steps
+- synth legato
+- synth decay / env
+- synth midi chan radios

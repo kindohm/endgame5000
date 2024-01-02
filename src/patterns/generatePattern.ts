@@ -1,5 +1,5 @@
 import { randInt } from "../util";
-import { MultPattern, Pattern } from "./types";
+import { MultPattern, Pattern, PliesPattern } from "./types";
 
 type GenerateOptions = {
   center?: number;
@@ -38,4 +38,12 @@ export const generateMultPattern = ({
   });
 
   return { mults, length: len };
+};
+
+export const generatePliesPattern = (): PliesPattern => {
+  const plies = new Array(8).fill(null).map(() => {
+    return { repeats: 0, length: 1 };
+  });
+
+  return { length: 8, plies };
 };

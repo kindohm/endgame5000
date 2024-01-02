@@ -10,10 +10,15 @@ const numSteps = (msg: OscMessage) => {
   const length = Math.floor(
     convertRange(args[0].value as number, [0, 1], [1, 8])
   );
-  const { pattern, cpsMultPattern } = getComposition();
+  const { pattern, cpsMultPattern, pliesPattern } = getComposition();
   const newPattern = { ...pattern, length };
   const newCpsMultPattern = { ...cpsMultPattern, length };
-  updateComposition({ pattern: newPattern, cpsMultPattern: newCpsMultPattern });
+  const newPliesPattern = { ...pliesPattern, length };
+  updateComposition({
+    pattern: newPattern,
+    cpsMultPattern: newCpsMultPattern,
+    pliesPattern: newPliesPattern,
+  });
 };
 
 export default numSteps;
