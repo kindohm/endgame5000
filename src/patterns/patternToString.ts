@@ -19,7 +19,6 @@ export const cpsMultPatternToString = (composition: Composition) => {
     .map((m) => {
       const min = m.mult > 0.5 ? 1 : 0.25;
       const max = m.mult > 0.5 ? 2 : 1;
-      console.log({ mult: m.mult, min, max });
       const mult =
         m.mult === 0.5 ? 1 : convertRange(m.mult, [0, 1], [min, max]);
       return `${mult.toFixed(2)}@${m.length}`;

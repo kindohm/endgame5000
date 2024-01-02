@@ -1,5 +1,4 @@
 - plies
-  - core UI
   - plies type (static vs mult)
 - lock all patterns (length, cps, plies) to same num steps
 - randomization global functions
